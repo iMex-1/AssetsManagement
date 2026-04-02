@@ -11,9 +11,9 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
                 <div class="flex space-x-8">
-                    <a href="{{ route('users.index') }}" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Users</a>
-                    <a href="{{ route('roles.index') }}" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Roles</a>
-                    <a href="{{ route('permissions.index') }}" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Permissions</a>
+                    <a href="/users" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Users</a>
+                    <a href="/roles" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Roles</a>
+                    <a href="/permissions" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Permissions</a>
                 </div>
                 @auth
                 <div class="flex items-center">
