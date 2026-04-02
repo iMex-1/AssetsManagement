@@ -10,11 +10,11 @@ Route::get('/', function () {
     return redirect('/login');
 })->name('home');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login')->middleware('web');
-Route::post('/login', [LoginController::class, 'login'])->middleware('web');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('web');
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
