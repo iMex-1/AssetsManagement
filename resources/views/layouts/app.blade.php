@@ -15,6 +15,15 @@
                     <a href="{{ route('roles.index') }}" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Roles</a>
                     <a href="{{ route('permissions.index') }}" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Permissions</a>
                 </div>
+                @auth
+                <div class="flex items-center">
+                    <span class="text-gray-700 mr-4">{{ auth()->user()->name }}</span>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="text-gray-600 hover:text-gray-900">Logout</button>
+                    </form>
+                </div>
+                @endauth
             </div>
         </div>
     </nav>
