@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PublicAsset OS — ERD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0a0f1e; }
+      h1   { color: #e2e8f0; }
+      p    { color: #94a3b8; }
+    }
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: .25rem;
+      letter-spacing: -.01em;
+    }
+    p {
+      font-size: .85rem;
+      color: #64748b;
+      margin-bottom: 1.5rem;
+    }
+    #erd {
+      width: 100%;
+      max-width: 1200px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      padding: 2rem;
+      overflow-x: auto;
+    }
+    @media (prefers-color-scheme: dark) {
+      #erd { background: #0f172a; box-shadow: 0 4px 24px rgba(0,0,0,.4); }
+    }
+    #erd svg { display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <h1>PublicAsset OS — Entity Relationship Diagram</h1>
+  <p>Database schema overview</p>
+  <div id="erd"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+
+    // Lines & text
+    lineColor:        dark ? '#7c9cbf' : '#4a7fa5',
+    textColor:        dark ? '#e2e8f0' : '#1e293b',
+
+    // Entity header (table title bar)
+    primaryColor:     dark ? '#1e3a5f' : '#2563eb',
+    primaryTextColor: dark ? '#e2e8f0' : '#ffffff',
+    primaryBorderColor: dark ? '#3b82f6' : '#1d4ed8',
+
+    // Attribute rows
+    secondaryColor:   dark ? '#1e293b' : '#eff6ff',
+    tertiaryColor:    dark ? '#0f172a' : '#dbeafe',
+
+    // Background
+    background:       dark ? '#0f172a' : '#f8fafc',
+    mainBkg:          dark ? '#1e3a5f' : '#2563eb',
+    nodeBorder:       dark ? '#3b82f6' : '#1d4ed8',
+  },
+});
+const { svg } = await mermaid.render('erd-svg', `erDiagram
+  categories {
+    bigint id PK
+    varchar name
+    enum type
+    int alert_threshold
+  }
+  items {
+    bigint id PK
+    bigint category_id FK
+    varchar model_name
+    varchar brand
+    text specifications
+  }
+  assets {
+    bigint id PK
+    bigint item_id FK
+    varchar serial_number
+    varchar internal_tag
+    enum status
+    varchar qr_code_path
+  }
+  consumables {
+    bigint id PK
+    bigint item_id FK
+    int quantity
+  }
+  requests {
+    bigint id PK
+    bigint user_id FK
+    bigint item_id FK
+    int quantity
+    enum status
+    text notes
+  }
+  assignments {
+    bigint id PK
+    bigint asset_id FK
+    bigint dept_id FK
+    bigint assigned_by FK
+    tinyint receipt_confirmed
+    timestamp assigned_at
+    timestamp returned_at
+  }
+  departments {
+    bigint id PK
+    varchar name
+  }
+  users {
+    bigint id PK
+    varchar name
+    varchar email
+    varchar password
+  }
+  roles {
+    bigint id PK
+    varchar name
+    varchar guard_name
+  }
+  permissions {
+    bigint id PK
+    varchar name
+    varchar guard_name
+  }
+
+  categories ||--o{ items : "one category → many items"
+  items ||--o{ assets : "one item → many assets"
+  items ||--o{ consumables : "one item → many consumables"
+  items ||--o{ requests : "one item → many requests"
+  assets ||--o{ assignments : "one asset → many assignments"
+  departments ||--o{ assignments : "one dept → many assignments"
+  users ||--o{ requests : "one user → many requests"
+  users ||--o{ assignments : "one user → many assignments"
+  users }o--o{ roles : "many users ↔ many roles"
+  roles }o--o{ permissions : "many roles ↔ many permissions"
+`);
+document.getElementById('erd').innerHTML = svg;
+
+document.querySelectorAll('#erd svg .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>
+</body>
+</html>
