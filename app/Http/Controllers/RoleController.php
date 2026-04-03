@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
-use App\Models\Role;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
@@ -24,17 +24,13 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:roles|max:255',
-            'description' => 'nullable|string',
             'permissions' => 'array',
         ]);
 
-        $role = Role::create([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-        ]);
+        $role = Role::create(['name' => $validated['name'], 'guard_name' => 'web']);
 
-        if (isset($validated['permissions'])) {
-            $role->permissions()->sync($validated['permissions']);
+        if (!empty($validated['permissions'])) {
+            $role->syncPermissions($validated['permissions']);
         }
 
         return redirect()->route('roles.index')->with('success', 'Role created successfully');
@@ -50,17 +46,13 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'description' => 'nullable|string',
             'permissions' => 'array',
         ]);
 
-        $role->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-        ]);
+        $role->update(['name' => $validated['name']]);
 
         if (isset($validated['permissions'])) {
-            $role->permissions()->sync($validated['permissions']);
+            $role->syncPermissions($validated['permissions']);
         }
 
         return redirect()->route('roles.index')->with('success', 'Role updated successfully');

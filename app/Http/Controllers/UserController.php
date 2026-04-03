@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -37,7 +37,7 @@ class UserController extends Controller
         ]);
 
         if (isset($validated['roles'])) {
-            $user->roles()->sync($validated['roles']);
+            $user->syncRoles($validated['roles']);
         }
 
         return redirect()->route('users.index')->with('success', 'User created successfully');
@@ -68,7 +68,7 @@ class UserController extends Controller
         }
 
         if (isset($validated['roles'])) {
-            $user->roles()->sync($validated['roles']);
+            $user->syncRoles($validated['roles']);
         }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully');

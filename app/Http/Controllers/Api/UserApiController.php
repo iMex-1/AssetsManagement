@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserApiController extends Controller
 {
@@ -30,7 +31,7 @@ class UserApiController extends Controller
         ]);
 
         if (isset($validated['roles'])) {
-            $user->roles()->sync($validated['roles']);
+            $user->syncRoles($validated['roles']);
         }
 
         return response()->json($user->load('roles'), 201);
@@ -60,7 +61,7 @@ class UserApiController extends Controller
         }
 
         if (isset($validated['roles'])) {
-            $user->roles()->sync($validated['roles']);
+            $user->syncRoles($validated['roles']);
         }
 
         return response()->json($user->load('roles'));

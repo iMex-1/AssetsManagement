@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class PermissionApiController extends Controller
 {
@@ -17,10 +17,9 @@ class PermissionApiController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:permissions|max:255',
-            'description' => 'nullable|string',
         ]);
 
-        $permission = Permission::create($validated);
+        $permission = Permission::create(['name' => $validated['name'], 'guard_name' => 'web']);
 
         return response()->json($permission, 201);
     }
@@ -34,7 +33,6 @@ class PermissionApiController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name,' . $permission->id,
-            'description' => 'nullable|string',
         ]);
 
         $permission->update($validated);

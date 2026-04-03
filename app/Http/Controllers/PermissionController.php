@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -22,10 +22,9 @@ class PermissionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:permissions|max:255',
-            'description' => 'nullable|string',
         ]);
 
-        Permission::create($validated);
+        Permission::create(['name' => $validated['name'], 'guard_name' => 'web']);
 
         return redirect()->route('permissions.index')->with('success', 'Permission created successfully');
     }
@@ -39,7 +38,6 @@ class PermissionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name,' . $permission->id,
-            'description' => 'nullable|string',
         ]);
 
         $permission->update($validated);
