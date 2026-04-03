@@ -14,7 +14,8 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
-            'manage_catalog',
+            'manage_categories',
+            'manage_items',
             'submit_request',
             'approve_request',
             'confirm_receipt',
