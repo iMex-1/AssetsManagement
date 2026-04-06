@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
             $table->date('date_creation');
             $table->string('statut')->default('En_attente'); // En_attente, Valide, Livre
-            $table->string('bon_scanne'); // URL fichier (obligatoire)
+            $table->string('bon_scanne')->nullable(); // URL fichier (ajouté lors de la livraison)
             $table->timestamps();
         });
     }
