@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('service_id')->nullable()->constrained('services')->onDelete('set null');
+            $table->string('nom_complet');
             $table->string('email')->unique();
+            $table->string('role')->default('Magasinier'); // Admin, Magasinier, Chef
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
