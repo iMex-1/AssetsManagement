@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\UserFactory;
@@ -20,7 +22,8 @@ class User extends Authenticatable
         'service_id',
         'nom_complet',
         'email',
-        'role', // Admin, Magasinier, Chef
+        /** @deprecated Display label only — must NOT be used for authorization; use Spatie roles/permissions instead */
+        'role',
         'password',
     ];
 

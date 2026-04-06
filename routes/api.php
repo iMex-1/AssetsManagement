@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\ArticleApiController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FournisseurApiController;
 use App\Http\Controllers\Api\PermissionApiController;
 use App\Http\Controllers\Api\RoleApiController;
 use App\Http\Controllers\Api\UserApiController;
@@ -14,6 +16,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     
+    Route::apiResource('articles', ArticleApiController::class);
+    Route::apiResource('fournisseurs', FournisseurApiController::class);
     Route::apiResource('users', UserApiController::class)->names([
         'index' => 'api.users.index',
         'store' => 'api.users.store',
