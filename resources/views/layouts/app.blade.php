@@ -14,16 +14,9 @@
                     <a href="/users" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Users</a>
                     <a href="/roles" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Roles</a>
                     <a href="/permissions" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Permissions</a>
+                    <a href="/articles" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Articles</a>
+                    <a href="/fournisseurs" class="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600">Fournisseurs</a>
                 </div>
-                @auth
-                <div class="flex items-center">
-                    <span class="text-gray-700 mr-4">{{ auth()->user()->name }}</span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="text-gray-600 hover:text-gray-900">Logout</button>
-                    </form>
-                </div>
-                @endauth
             </div>
         </div>
     </nav>

@@ -9,17 +9,13 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return redirect('/articles');
 })->name('home');
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('articles', ArticleController::class);
-    Route::resource('fournisseurs', FournisseurController::class);
-    Route::resource('users', UserController::class);
-    Route::resource('roles', RoleController::class);
-    Route::resource('permissions', PermissionController::class);
-});
+Route::resource('articles', ArticleController::class);
+Route::resource('fournisseurs', FournisseurController::class);
+Route::resource('users', UserController::class);
+Route::resource('roles', RoleController::class);
+Route::resource('permissions', PermissionController::class);
+
