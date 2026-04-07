@@ -1,0 +1,25 @@
+.pageHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.pageTitle { font-size: 20px; font-weight: 600; color: var(--neutral-900); }
+.card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; }
+.table thead tr { background: var(--neutral-50); border-bottom: 1px solid var(--neutral-200); }
+.table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--neutral-500); }
+.table td { padding: 12px 16px; font-size: 13px; color: var(--neutral-700); border-bottom: 1px solid var(--neutral-100); }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--neutral-50); }
+.name { font-weight: 500; color: var(--neutral-900); }
+.muted { color: var(--neutral-500); }
+.badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.empty { text-align: center; color: var(--neutral-500); padding: 40px !important; }
+.actions { display: flex; gap: 12px; }
+.actionLink { font-size: 12px; color: var(--primary-light); font-weight: 500; background: none; border: none; cursor: pointer; padding: 0; }
+.actionLink:hover { text-decoration: underline; }
+.actionDanger { font-size: 12px; color: var(--danger); font-weight: 500; background: none; border: none; cursor: pointer; padding: 0; }
+.actionDanger:hover { text-decoration: underline; }
+.formCard { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px; max-width: 520px; }
+.formGrid { display: flex; flex-direction: column; gap: 18px; }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.formActions { display: flex; gap: 10px; padding-top: 8px; }
+.checkboxGroup { display: flex; flex-direction: column; gap: 8px; }
+.checkboxLabel { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--neutral-700); cursor: pointer; }
+.checkboxLabel input { accent-color: var(--primary-light); width: 14px; height: 14px; }
