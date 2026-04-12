@@ -10,6 +10,15 @@ import { ArticleForm } from '../pages/articles/ArticleForm'
 import { ArticleShow } from '../pages/articles/ArticleShow'
 import { FournisseurList } from '../pages/fournisseurs/FournisseurList'
 import { FournisseurForm } from '../pages/fournisseurs/FournisseurForm'
+import { ReceptionList } from '../pages/receptions/ReceptionList'
+import { ReceptionForm } from '../pages/receptions/ReceptionForm'
+import { ReceptionShow } from '../pages/receptions/ReceptionShow'
+import { DemandeList } from '../pages/demandes/DemandeList'
+import { DemandeForm } from '../pages/demandes/DemandeForm'
+import { DemandeShow } from '../pages/demandes/DemandeShow'
+import { AffectationList } from '../pages/affectations/AffectationList'
+import { AffectationForm } from '../pages/affectations/AffectationForm'
+import { AffectationShow } from '../pages/affectations/AffectationShow'
 import { UserList } from '../pages/users/UserList'
 import { UserForm } from '../pages/users/UserForm'
 import { RoleList } from '../pages/roles/RoleList'
@@ -52,6 +61,21 @@ export const router = createBrowserRouter([
       { path: 'fournisseurs/create', element: <FournisseurForm /> },
       { path: 'fournisseurs/:id/edit', element: <FournisseurForm /> },
 
+      // Réceptions
+      { path: 'receptions', element: <ReceptionList /> },
+      { path: 'receptions/create', element: <ReceptionForm /> },
+      { path: 'receptions/:id', element: <ReceptionShow /> },
+
+      // Demandes
+      { path: 'demandes', element: <DemandeList /> },
+      { path: 'demandes/create', element: <DemandeForm /> },
+      { path: 'demandes/:id', element: <DemandeShow /> },
+
+      // Affectations
+      { path: 'affectations', element: <AffectationList /> },
+      { path: 'affectations/create', element: <AffectationForm /> },
+      { path: 'affectations/:id', element: <AffectationShow /> },
+
       // Users / Roles / Permissions
       { path: 'users', element: <UserList /> },
       { path: 'users/create', element: <UserForm /> },
@@ -64,12 +88,9 @@ export const router = createBrowserRouter([
       { path: 'permissions/:id/edit', element: <PermissionForm /> },
 
       // Coming soon
-      { path: 'receptions', element: <ComingSoon title="Réceptions" /> },
-      { path: 'demandes', element: <ComingSoon title="Demandes" /> },
-      { path: 'affectations', element: <ComingSoon title="Affectations" /> },
       { path: 'rapports', element: <ComingSoon title="Rapports" /> },
 
-      // Catch-all inside the app
+      // Catch-all
       { path: '*', element: <ComingSoon title="Page introuvable" /> },
     ],
   },
