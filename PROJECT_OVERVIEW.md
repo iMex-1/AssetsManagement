@@ -39,7 +39,7 @@ Three roles exist in the system:
 `manage_categories` `manage_items` `submit_request` `approve_request` `confirm_receipt` `manage_assets` `report_damage` `manage_consumables` `manage_assignments` `view_reports` `view_own_dept`
 
 ---
-
+theHunter: Call of the Wild
 ## Core Workflow
 
 ```

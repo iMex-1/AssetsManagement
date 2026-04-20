@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getUser, createUser, updateUser } from '../../api/users'
 import { getRoles } from '../../api/roles'
+import { getServices } from '../../api/services'
 import { Button } from '../../components/ui/Button'
-import { FormField, Input } from '../../components/ui/FormField'
+import { FormField, Input, Select } from '../../components/ui/FormField'
 import { Spinner } from '../../components/ui/Spinner'
 import styles from './Users.module.css'
 
@@ -11,20 +12,22 @@ export function UserForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = Boolean(id)
-  const [form, setForm] = useState({ nom_complet: '', email: '', password: '', password_confirmation: '', roles: [] })
+  const [form, setForm] = useState({ nom_complet: '', email: '', password: '', password_confirmation: '', service_id: '', roles: [] })
   const [allRoles, setAllRoles] = useState([])
+  const [allServices, setAllServices] = useState([])
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const init = async () => {
-      const rolesRes = await getRoles()
+      const [rolesRes, servicesRes] = await Promise.all([getRoles(), getServices()])
       setAllRoles(rolesRes.data.data ?? rolesRes.data)
+      setAllServices(servicesRes.data.data ?? [])
       if (isEdit) {
         const userRes = await getUser(id)
         const u = userRes.data
-        setForm({ nom_complet: u.nom_complet, email: u.email, password: '', password_confirmation: '', roles: u.roles ?? [] })
+        setForm({ nom_complet: u.nom_complet, email: u.email, password: '', password_confirmation: '', service_id: u.service_id ?? '', roles: u.roles ?? [] })
       }
       setLoading(false)
     }
@@ -44,7 +47,7 @@ export function UserForm() {
     e.preventDefault()
     setErrors({})
     setSaving(true)
-    const payload = { ...form }
+    const payload = { ...form, service_id: form.service_id || null }
     if (isEdit && !payload.password) { delete payload.password; delete payload.password_confirmation }
     try {
       if (isEdit) await updateUser(id, payload)
@@ -69,6 +72,12 @@ export function UserForm() {
           </FormField>
           <FormField label="Email" error={errors.email?.[0]} required>
             <Input type="email" value={form.email} onChange={set('email')} error={errors.email?.[0]} required />
+          </FormField>
+          <FormField label="Service" error={errors.service_id?.[0]} hint="Optionnel">
+            <Select value={form.service_id} onChange={set('service_id')} error={errors.service_id?.[0]}>
+              <option value="">-- Aucun service --</option>
+              {allServices.map((s) => <option key={s.id} value={s.id}>{s.nom_service}</option>)}
+            </Select>
           </FormField>
           <div className={styles.formRow}>
             <FormField label={isEdit ? 'Nouveau mot de passe' : 'Mot de passe'} error={errors.password?.[0]} required={!isEdit}>

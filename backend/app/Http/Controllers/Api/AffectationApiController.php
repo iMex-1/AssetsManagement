@@ -40,6 +40,10 @@ class AffectationApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->can('manage_assignments')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'article_id'        => 'required|exists:articles,id',
             'service_id'        => 'required|exists:services,id',
@@ -89,6 +93,10 @@ class AffectationApiController extends Controller
 
     public function destroy(Affectation $affectation): JsonResponse
     {
+        if (! request()->user()->can('manage_assignments')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         // Restore stock on delete
         $affectation->article->increment('stock_actuel', $affectation->quantite_affectee);
         $affectation->delete();

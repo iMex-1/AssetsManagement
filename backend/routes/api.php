@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PermissionApiController;
 use App\Http\Controllers\Api\ReceptionApiController;
 use App\Http\Controllers\Api\RoleApiController;
 use App\Http\Controllers\Api\ServiceApiController;
+use App\Http\Controllers\Api\StatsApiController;
 use App\Http\Controllers\Api\UserApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Services (read-only)
     Route::get('services', [ServiceApiController::class, 'index']);
+
+    // Stats / Reports
+    Route::get('stats', [StatsApiController::class, 'index']);
 
     // Admin
     Route::apiResource('users', UserApiController::class);

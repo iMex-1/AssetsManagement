@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getPermissions, createPermission, updatePermission } from '../../api/permissions'
+import { getPermission, createPermission, updatePermission } from '../../api/permissions'
 import { Button } from '../../components/ui/Button'
 import { FormField, Input } from '../../components/ui/FormField'
 import { Spinner } from '../../components/ui/Spinner'
@@ -17,11 +17,8 @@ export function PermissionForm() {
 
   useEffect(() => {
     if (!isEdit) return
-    // fetch all and find by id since there's no single GET
-    getPermissions().then(({ data }) => {
-      const all = data.data ?? data
-      const found = all.find((p) => String(p.id) === String(id))
-      if (found) setName(found.name)
+    getPermission(id).then(({ data }) => {
+      setName(data.name)
       setLoading(false)
     })
   }, [id, isEdit])

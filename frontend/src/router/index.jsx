@@ -25,6 +25,7 @@ import { RoleList } from '../pages/roles/RoleList'
 import { RoleForm } from '../pages/roles/RoleForm'
 import { PermissionList } from '../pages/permissions/PermissionList'
 import { PermissionForm } from '../pages/permissions/PermissionForm'
+import { Rapports } from '../pages/rapports/Rapports'
 
 function ProtectedRoute({ children }) {
   const { token } = useAuth()
@@ -88,7 +89,7 @@ export const router = createBrowserRouter([
       { path: 'permissions/:id/edit', element: <PermissionForm /> },
 
       // Coming soon
-      { path: 'rapports', element: <ComingSoon title="Rapports" /> },
+      { path: 'rapports', element: <Rapports /> },
 
       // Catch-all
       { path: '*', element: <ComingSoon title="Page introuvable" /> },

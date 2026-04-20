@@ -36,6 +36,10 @@ class DemandeApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->can('submit_request')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'date_creation'            => 'required|date',
             'lignes'                   => 'required|array|min:1',
@@ -77,6 +81,10 @@ class DemandeApiController extends Controller
 
     public function update(Request $request, Demande $demande): JsonResponse
     {
+        if (! $request->user()->can('approve_request')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'statut' => ['required', Rule::in(['En_attente', 'Valide', 'Livre'])],
             'bon_scanne' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',

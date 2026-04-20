@@ -10,6 +10,7 @@ const TITLES = {
   '/receptions':  'Réceptions',
   '/demandes':    'Demandes',
   '/affectations':'Affectations',
+  '/rapports':    'Rapports',
   '/users':       'Utilisateurs',
   '/roles':       'Rôles',
   '/permissions': 'Permissions',

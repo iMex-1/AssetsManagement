@@ -30,6 +30,10 @@ class ArticleApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'designation'  => 'required|string|max:255',
             'categorie'    => 'required|in:Materiel,Fourniture',
@@ -49,6 +53,10 @@ class ArticleApiController extends Controller
 
     public function update(Request $request, Article $article): JsonResponse
     {
+        if (! $request->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'designation'  => 'sometimes|string|max:255',
             'categorie'    => 'sometimes|in:Materiel,Fourniture',
@@ -63,6 +71,10 @@ class ArticleApiController extends Controller
 
     public function destroy(Article $article): JsonResponse
     {
+        if (! request()->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $article->delete();
 
         return response()->json(['message' => 'Article supprimé.']);

@@ -20,6 +20,10 @@ class FournisseurApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'raison_sociale' => 'required|string|max:255',
             'telephone'      => 'nullable|string|max:20',
@@ -37,6 +41,10 @@ class FournisseurApiController extends Controller
 
     public function update(Request $request, Fournisseur $fournisseur): JsonResponse
     {
+        if (! $request->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'raison_sociale' => 'sometimes|string|max:255',
             'telephone'      => 'nullable|string|max:20',
@@ -49,6 +57,10 @@ class FournisseurApiController extends Controller
 
     public function destroy(Fournisseur $fournisseur): JsonResponse
     {
+        if (! request()->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $fournisseur->delete();
 
         return response()->json(['message' => 'Fournisseur supprimé.']);

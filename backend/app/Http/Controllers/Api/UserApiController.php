@@ -14,6 +14,10 @@ class UserApiController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $users = User::with('roles')
             ->latest()
             ->paginate($request->integer('per_page', 15));
@@ -25,6 +29,10 @@ class UserApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'nom_complet'           => 'required|string|max:255',
             'email'                 => 'required|email|unique:users,email',
@@ -49,11 +57,19 @@ class UserApiController extends Controller
 
     public function show(User $user): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         return response()->json($this->format($user->load('roles')));
     }
 
     public function update(Request $request, User $user): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'nom_complet'           => 'sometimes|string|max:255',
             'email'                 => 'sometimes|email|unique:users,email,' . $user->id,
@@ -78,6 +94,10 @@ class UserApiController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully.']);

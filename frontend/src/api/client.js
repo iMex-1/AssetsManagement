@@ -19,6 +19,10 @@ client.interceptors.response.use(
       localStorage.removeItem('user')
       window.location.href = '/login'
     }
+    if (err.response?.status === 403) {
+      // Attach a friendly message so components can display it
+      err.friendlyMessage = err.response.data?.message ?? 'Accès refusé. Vous n\'avez pas la permission d\'effectuer cette action.'
+    }
     return Promise.reject(err)
   }
 )

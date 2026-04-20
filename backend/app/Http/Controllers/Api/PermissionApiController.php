@@ -13,6 +13,10 @@ class PermissionApiController extends Controller
 {
     public function index(): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $permissions = Permission::orderBy('name')->get();
 
         return response()->json(['data' => $permissions]);
@@ -20,6 +24,10 @@ class PermissionApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|unique:permissions,name|max:255',
         ]);
@@ -31,11 +39,19 @@ class PermissionApiController extends Controller
 
     public function show(Permission $permission): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         return response()->json($permission);
     }
 
     public function update(Request $request, Permission $permission): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|unique:permissions,name,' . $permission->id . '|max:255',
         ]);
@@ -47,6 +63,10 @@ class PermissionApiController extends Controller
 
     public function destroy(Permission $permission): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $permission->delete();
 
         return response()->json(['message' => 'Permission supprimée.']);

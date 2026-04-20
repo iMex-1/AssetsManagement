@@ -14,6 +14,10 @@ class RoleApiController extends Controller
 {
     public function index(): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $roles = Role::with('permissions')->get();
 
         return response()->json(['data' => $roles]);
@@ -21,6 +25,10 @@ class RoleApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name'        => 'required|string|unique:roles,name|max:255',
             'permissions' => 'nullable|array',
@@ -37,11 +45,19 @@ class RoleApiController extends Controller
 
     public function show(Role $role): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         return response()->json($role->load('permissions'));
     }
 
     public function update(Request $request, Role $role): JsonResponse
     {
+        if (! $request->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name'        => 'sometimes|string|unique:roles,name,' . $role->id . '|max:255',
             'permissions' => 'nullable|array',
@@ -60,6 +76,10 @@ class RoleApiController extends Controller
 
     public function destroy(Role $role): JsonResponse
     {
+        if (! request()->user()->hasRole('Admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $role->delete();
 
         return response()->json(['message' => 'Rôle supprimé.']);

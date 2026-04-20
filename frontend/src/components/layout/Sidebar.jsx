@@ -2,20 +2,22 @@ import { NavLink } from 'react-router-dom'
 import {
   MdDashboard, MdInventory, MdPeople, MdAssignment,
   MdLocalShipping, MdSwapHoriz, MdSecurity, MdPerson,
-  MdShield, MdKey, MdStorefront,
+  MdShield, MdKey, MdStorefront, MdBarChart,
 } from 'react-icons/md'
 import { useAuth } from '../../hooks/useAuth'
 import styles from './Sidebar.module.css'
 
 const NAV = [
   { label: 'Tableau de bord', to: '/dashboard',    roles: null,                       icon: MdDashboard },
-  { type: 'section', label: 'Catalogue',            roles: ['Admin', 'Magasinier'] },
-  { label: 'Articles',        to: '/articles',      roles: ['Admin', 'Magasinier'],    icon: MdInventory },
-  { label: 'Fournisseurs',    to: '/fournisseurs',  roles: ['Admin', 'Magasinier'],    icon: MdStorefront },
-  { label: 'Réceptions',      to: '/receptions',    roles: ['Admin', 'Magasinier'],    icon: MdLocalShipping },
+  { type: 'section', label: 'Catalogue',            roles: ['Admin'] },
+  { label: 'Articles',        to: '/articles',      roles: ['Admin'],                  icon: MdInventory },
+  { label: 'Fournisseurs',    to: '/fournisseurs',  roles: ['Admin'],                  icon: MdStorefront },
+  { label: 'Réceptions',      to: '/receptions',    roles: ['Admin'],                  icon: MdLocalShipping },
   { type: 'section', label: 'Opérations',           roles: null },
   { label: 'Demandes',        to: '/demandes',      roles: null,                       icon: MdAssignment },
-  { label: 'Affectations',    to: '/affectations',  roles: ['Admin', 'Magasinier'],    icon: MdSwapHoriz },
+  { label: 'Affectations',    to: '/affectations',  roles: ['Admin'],                  icon: MdSwapHoriz },
+  { type: 'section', label: 'Rapports',             roles: ['Admin', 'Overseer'] },
+  { label: 'Rapports',        to: '/rapports',      roles: ['Admin', 'Overseer'],      icon: MdBarChart },
   { type: 'section', label: 'Administration',       roles: ['Admin'] },
   { label: 'Utilisateurs',    to: '/users',         roles: ['Admin'],                  icon: MdPeople },
   { label: 'Rôles',           to: '/roles',         roles: ['Admin'],                  icon: MdShield },
