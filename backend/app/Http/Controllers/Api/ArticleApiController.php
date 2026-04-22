@@ -38,8 +38,13 @@ class ArticleApiController extends Controller
             'designation'  => 'required|string|max:255',
             'categorie'    => 'required|in:Materiel,Fourniture',
             'stock_actuel' => 'required|integer|min:0',
-            'seuil_alerte' => 'required|integer|min:0',
+            'seuil_alerte' => 'nullable|integer|min:0',
         ]);
+
+        // Materiel has no alert threshold
+        if (($validated['categorie'] ?? '') === 'Materiel') {
+            $validated['seuil_alerte'] = null;
+        }
 
         $article = Article::create($validated);
 
@@ -61,8 +66,14 @@ class ArticleApiController extends Controller
             'designation'  => 'sometimes|string|max:255',
             'categorie'    => 'sometimes|in:Materiel,Fourniture',
             'stock_actuel' => 'sometimes|integer|min:0',
-            'seuil_alerte' => 'sometimes|integer|min:0',
+            'seuil_alerte' => 'nullable|integer|min:0',
         ]);
+
+        // Materiel has no alert threshold
+        $categorie = $validated['categorie'] ?? $article->categorie;
+        if ($categorie === 'Materiel') {
+            $validated['seuil_alerte'] = null;
+        }
 
         $article->update($validated);
 
@@ -77,6 +88,31 @@ class ArticleApiController extends Controller
 
         $article->delete();
 
-        return response()->json(['message' => 'Article supprimé.']);
+        return response()->json(['message' => 'Article archivé.']);
+    }
+
+    public function archived(Request $request): JsonResponse
+    {
+        $query = Article::onlyTrashed();
+
+        if ($request->filled('search')) {
+            $query->where('designation', 'like', '%' . $request->search . '%');
+        }
+
+        $articles = $query->latest('deleted_at')->paginate($request->integer('per_page', 25));
+
+        return response()->json($articles);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        if (! request()->user()->can('manage_items')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $article = Article::onlyTrashed()->findOrFail($id);
+        $article->restore();
+
+        return response()->json($article);
     }
 }

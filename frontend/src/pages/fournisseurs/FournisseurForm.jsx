@@ -50,8 +50,13 @@ export function FournisseurForm() {
           <FormField label="Raison sociale" error={errors.raison_sociale?.[0]} required>
             <Input value={form.raison_sociale} onChange={set('raison_sociale')} error={errors.raison_sociale?.[0]} required />
           </FormField>
-          <FormField label="Téléphone" error={errors.telephone?.[0]} hint="Optionnel">
-            <Input value={form.telephone} onChange={set('telephone')} error={errors.telephone?.[0]} />
+          <FormField label="Téléphone" error={errors.telephone?.[0]} hint="Format : 06/07XXXXXXXX ou +2126/7XXXXXXXX">
+            <Input
+              value={form.telephone}
+              onChange={set('telephone')}
+              error={errors.telephone?.[0]}
+              placeholder="0612345678"
+            />
           </FormField>
           <div className={styles.formActions}>
             <Button type="submit" disabled={saving}>{saving ? 'Enregistrement…' : 'Enregistrer'}</Button>

@@ -26,7 +26,7 @@ class FournisseurApiController extends Controller
 
         $validated = $request->validate([
             'raison_sociale' => 'required|string|max:255',
-            'telephone'      => 'nullable|string|max:20',
+            'telephone'      => ['nullable', 'string', 'regex:/^(0[67]\d{8}|\+2126[0-9]\d{7}|\+2127[0-9]\d{7})$/'],
         ]);
 
         $fournisseur = Fournisseur::create($validated);
@@ -47,7 +47,7 @@ class FournisseurApiController extends Controller
 
         $validated = $request->validate([
             'raison_sociale' => 'sometimes|string|max:255',
-            'telephone'      => 'nullable|string|max:20',
+            'telephone'      => ['nullable', 'string', 'regex:/^(0[67]\d{8}|\+2126[0-9]\d{7}|\+2127[0-9]\d{7})$/'],
         ]);
 
         $fournisseur->update($validated);

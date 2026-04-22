@@ -45,7 +45,7 @@ export function Dashboard() {
     }).catch(() => setLoading(false))
   }, [])
 
-  const lowStock = articles.filter((a) => a.stock_actuel <= a.seuil_alerte)
+  const lowStock = articles.filter((a) => a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte)
   const demandesEnAttente = demandes.filter((d) => d.statut === 'En_attente')
 
   const now = new Date()

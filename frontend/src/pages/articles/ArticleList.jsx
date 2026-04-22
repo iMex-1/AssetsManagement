@@ -53,7 +53,7 @@ export function ArticleList() {
       <div className={styles.pageHeader}>
         <h2 className={styles.pageTitle}>Articles</h2>
         {hasPermission('manage_items') && (
-          <Button onClick={() => navigate('/articles/create')}>+ Nouvel article</Button>
+          <Button variant="secondary" onClick={() => navigate('/articles/archives')}>Archives</Button>
         )}
       </div>
 
@@ -94,7 +94,7 @@ export function ArticleList() {
                 <tr key={a.id}>
                   <td className={styles.nameCell}>
                     {a.designation}
-                    {a.stock_actuel <= a.seuil_alerte && (
+                    {a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte && (
                       <Badge variant="danger">Stock bas</Badge>
                     )}
                   </td>
@@ -103,10 +103,10 @@ export function ArticleList() {
                       {a.categorie}
                     </Badge>
                   </td>
-                  <td className={a.stock_actuel <= a.seuil_alerte ? styles.stockLow : ''}>
+                  <td className={a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte ? styles.stockLow : ''}>
                     {a.stock_actuel}
                   </td>
-                  <td>{a.seuil_alerte}</td>
+                  <td>{a.categorie === 'Materiel' ? '—' : a.seuil_alerte}</td>
                   <td className={styles.actions}>
                     <Link to={`/articles/${a.id}`} className={styles.actionLink}>Voir</Link>
                     {hasPermission('manage_items') && (
@@ -116,6 +116,15 @@ export function ArticleList() {
                           Supprimer
                         </button>
                       </>
+                    )}
+                    {hasPermission('manage_items') && a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte && (
+                      <button
+                        className={styles.actionReorder}
+                        onClick={() => navigate(`/receptions/create?article_id=${a.id}`)}
+                        title="Créer une réception pour réapprovisionner"
+                      >
+                        ↺ Réapprovisionner
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -129,8 +138,8 @@ export function ArticleList() {
 
       {deleteTarget && (
         <Modal
-          title="Supprimer l'article"
-          message={`Supprimer « ${deleteTarget.designation} » ? Cette action est irréversible.`}
+          title="Archiver l'article"
+          message={`Archiver « ${deleteTarget.designation} » ? L'article sera masqué du catalogue mais son historique sera conservé.`}
           confirmLabel="Supprimer"
           danger
           onConfirm={handleDelete}

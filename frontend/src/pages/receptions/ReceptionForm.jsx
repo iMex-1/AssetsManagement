@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { MdAdd, MdDelete } from 'react-icons/md'
 import { createReception } from '../../api/receptions'
 import { getFournisseurs } from '../../api/fournisseurs'
@@ -9,17 +9,24 @@ import { FormField, Input, Select } from '../../components/ui/FormField'
 import { Spinner } from '../../components/ui/Spinner'
 import styles from './Receptions.module.css'
 
-const emptyLigne = () => ({ article_id: '', quantite_recue: 1 })
+const emptyLigne = (articleId = '') => ({
+  mode: articleId ? 'existing' : 'existing', // 'existing' | 'new'
+  article_id: articleId,
+  quantite_recue: 1,
+  article_data: { designation: '', categorie: '', seuil_alerte: 0 },
+})
 
 export function ReceptionForm() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const prefilledArticleId = searchParams.get('article_id') ?? ''
+
   const [form, setForm] = useState({
     fournisseur_id: '',
     type_doc: '',
-    numero_doc: '',
     date_reception: new Date().toISOString().split('T')[0],
   })
-  const [lignes, setLignes] = useState([emptyLigne()])
+  const [lignes, setLignes] = useState([emptyLigne(prefilledArticleId)])
   const [fournisseurs, setFournisseurs] = useState([])
   const [articles, setArticles] = useState([])
   const [errors, setErrors] = useState({})
@@ -45,15 +52,43 @@ export function ReceptionForm() {
     setLignes(next)
   }
 
+  const setLigneArticleData = (i, field, value) => {
+    const next = [...lignes]
+    next[i] = {
+      ...next[i],
+      article_data: { ...next[i].article_data, [field]: value },
+    }
+    // Reset seuil_alerte when switching to Materiel
+    if (field === 'categorie' && value === 'Materiel') {
+      next[i].article_data.seuil_alerte = 0
+    }
+    setLignes(next)
+  }
+
+  const toggleMode = (i, mode) => {
+    const next = [...lignes]
+    next[i] = { ...next[i], mode, article_id: '', article_data: { designation: '', categorie: '', seuil_alerte: 0 } }
+    setLignes(next)
+  }
+
   const addLigne = () => setLignes([...lignes, emptyLigne()])
   const removeLigne = (i) => setLignes(lignes.filter((_, idx) => idx !== i))
+
+  const buildPayload = () => {
+    return lignes.map((l) => {
+      if (l.mode === 'existing') {
+        return { article_id: l.article_id, quantite_recue: l.quantite_recue }
+      }
+      return { article_data: l.article_data, quantite_recue: l.quantite_recue }
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrors({})
     setSaving(true)
     try {
-      await createReception({ ...form, lignes })
+      await createReception({ ...form, lignes: buildPayload() })
       navigate('/receptions')
     } catch (err) {
       if (err.response?.status === 422) setErrors(err.response.data.errors ?? {})
@@ -86,9 +121,6 @@ export function ReceptionForm() {
               </FormField>
             </div>
             <div className={styles.formRow}>
-              <FormField label="Numéro de document" error={errors.numero_doc?.[0]} required>
-                <Input value={form.numero_doc} onChange={setField('numero_doc')} error={errors.numero_doc?.[0]} required />
-              </FormField>
               <FormField label="Date de réception" error={errors.date_reception?.[0]} required>
                 <Input type="date" value={form.date_reception} onChange={setField('date_reception')} error={errors.date_reception?.[0]} required />
               </FormField>
@@ -101,44 +133,103 @@ export function ReceptionForm() {
               <Button type="button" variant="secondary" size="sm" onClick={addLigne}><MdAdd /> Ajouter une ligne</Button>
             </div>
             {errors['lignes'] && <p className={styles.errorMsg}>{errors['lignes'][0]}</p>}
-            <table className={styles.lignesTable}>
-              <thead>
-                <tr><th>Article</th><th>Quantité reçue</th><th></th></tr>
-              </thead>
-              <tbody>
-                {lignes.map((l, i) => (
-                  <tr key={i}>
-                    <td>
-                      <Select
-                        value={l.article_id}
-                        onChange={(e) => setLigne(i, 'article_id', e.target.value)}
-                        error={errors[`lignes.${i}.article_id`]?.[0]}
-                        required
-                      >
-                        <option value="">-- Article --</option>
-                        {articles.map((a) => <option key={a.id} value={a.id}>{a.designation}</option>)}
-                      </Select>
-                    </td>
-                    <td>
+
+            <div className={styles.lignesRows}>
+              {lignes.map((l, i) => (
+                <div key={i} className={styles.ligneCard}>
+                  {/* Mode toggle */}
+                  <div className={styles.modeToggle}>
+                    <button
+                      type="button"
+                      className={`${styles.modeBtn} ${l.mode === 'existing' ? styles.modeBtnActive : ''}`}
+                      onClick={() => toggleMode(i, 'existing')}
+                    >
+                      Article existant
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.modeBtn} ${l.mode === 'new' ? styles.modeBtnActive : ''}`}
+                      onClick={() => toggleMode(i, 'new')}
+                    >
+                      + Nouvel article
+                    </button>
+                  </div>
+
+                  <div className={styles.ligneFields}>
+                    {l.mode === 'existing' ? (
+                      <FormField label="Article" error={errors[`lignes.${i}.article_id`]?.[0]} required>
+                        <Select
+                          value={l.article_id}
+                          onChange={(e) => setLigne(i, 'article_id', e.target.value)}
+                          error={errors[`lignes.${i}.article_id`]?.[0]}
+                          required
+                        >
+                          <option value="">-- Choisir un article --</option>
+                          {articles.map((a) => (
+                            <option key={a.id} value={a.id}>{a.designation} ({a.categorie})</option>
+                          ))}
+                        </Select>
+                      </FormField>
+                    ) : (
+                      <div className={styles.newArticleFields}>
+                        <FormField label="Désignation" error={errors[`lignes.${i}.article_data.designation`]?.[0]} required>
+                          <Input
+                            value={l.article_data.designation}
+                            onChange={(e) => setLigneArticleData(i, 'designation', e.target.value)}
+                            error={errors[`lignes.${i}.article_data.designation`]?.[0]}
+                            placeholder="Nom de l'article"
+                            required
+                          />
+                        </FormField>
+                        <FormField label="Catégorie" error={errors[`lignes.${i}.article_data.categorie`]?.[0]} required>
+                          <Select
+                            value={l.article_data.categorie}
+                            onChange={(e) => setLigneArticleData(i, 'categorie', e.target.value)}
+                            error={errors[`lignes.${i}.article_data.categorie`]?.[0]}
+                            required
+                          >
+                            <option value="">-- Catégorie --</option>
+                            <option value="Materiel">Matériel</option>
+                            <option value="Fourniture">Fourniture</option>
+                          </Select>
+                        </FormField>
+                        {l.article_data.categorie === 'Fourniture' && (
+                          <FormField label="Seuil d'alerte" error={errors[`lignes.${i}.article_data.seuil_alerte`]?.[0]}>
+                            <Input
+                              type="number" min="0"
+                              value={l.article_data.seuil_alerte}
+                              onChange={(e) => setLigneArticleData(i, 'seuil_alerte', parseInt(e.target.value) || 0)}
+                              error={errors[`lignes.${i}.article_data.seuil_alerte`]?.[0]}
+                            />
+                          </FormField>
+                        )}
+                      </div>
+                    )}
+
+                    <FormField label="Quantité reçue" error={errors[`lignes.${i}.quantite_recue`]?.[0]} required>
                       <Input
                         type="number" min="1"
                         value={l.quantite_recue}
-                        onChange={(e) => setLigne(i, 'quantite_recue', parseInt(e.target.value) || 1)}
+                        onFocus={(e) => { e.target.select(); setLigne(i, 'quantite_recue', '') }}
+                        onBlur={(e) => {
+                          const v = parseInt(e.target.value)
+                          setLigne(i, 'quantite_recue', isNaN(v) || v < 1 ? 1 : v)
+                        }}
+                        onChange={(e) => setLigne(i, 'quantite_recue', e.target.value)}
                         error={errors[`lignes.${i}.quantite_recue`]?.[0]}
                         required
                       />
-                    </td>
-                    <td>
-                      {lignes.length > 1 && (
-                        <button type="button" className={styles.removeLigne} onClick={() => removeLigne(i)}>
-                          <MdDelete />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </FormField>
+                  </div>
+
+                  {lignes.length > 1 && (
+                    <button type="button" className={styles.removeLigneCard} onClick={() => removeLigne(i)}>
+                      <MdDelete />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className={styles.formActions}>
