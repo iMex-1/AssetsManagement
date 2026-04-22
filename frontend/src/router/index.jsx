@@ -8,11 +8,13 @@ import { Dashboard } from '../pages/dashboard/Dashboard'
 import { ArticleList } from '../pages/articles/ArticleList'
 import { ArticleForm } from '../pages/articles/ArticleForm'
 import { ArticleShow } from '../pages/articles/ArticleShow'
+import { ArticleArchives } from '../pages/articles/ArticleArchives'
 import { FournisseurList } from '../pages/fournisseurs/FournisseurList'
 import { FournisseurForm } from '../pages/fournisseurs/FournisseurForm'
 import { ReceptionList } from '../pages/receptions/ReceptionList'
 import { ReceptionForm } from '../pages/receptions/ReceptionForm'
 import { ReceptionShow } from '../pages/receptions/ReceptionShow'
+import { ReceptionPrint } from '../pages/receptions/ReceptionPrint'
 import { DemandeList } from '../pages/demandes/DemandeList'
 import { DemandeForm } from '../pages/demandes/DemandeForm'
 import { DemandeShow } from '../pages/demandes/DemandeShow'
@@ -44,6 +46,11 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: '/receptions/:id/print',
+    element: <ProtectedRoute><ReceptionPrint /></ProtectedRoute>,
+    errorElement: <ErrorPage />,
+  },
+  {
     path: '/',
     element: <ProtectedRoute><AppLayout /></ProtectedRoute>,
     errorElement: <ErrorPage />,
@@ -53,7 +60,7 @@ export const router = createBrowserRouter([
 
       // Articles
       { path: 'articles', element: <ArticleList /> },
-      { path: 'articles/create', element: <ArticleForm /> },
+      { path: 'articles/archives', element: <ArticleArchives /> },
       { path: 'articles/:id', element: <ArticleShow /> },
       { path: 'articles/:id/edit', element: <ArticleForm /> },
 

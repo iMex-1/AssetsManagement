@@ -19,7 +19,7 @@ export function ArticleShow() {
 
   if (!article) return <Spinner />
 
-  const isLow = article.stock_actuel <= article.seuil_alerte
+  const isLow = article.categorie === 'Fourniture' && article.stock_actuel <= article.seuil_alerte
 
   return (
     <div>
@@ -50,7 +50,7 @@ export function ArticleShow() {
           </div>
           <div className={styles.showRow}>
             <span className={styles.showLabel}>Seuil d'alerte</span>
-            <span className={styles.showValue}>{article.seuil_alerte}</span>
+            <span className={styles.showValue}>{article.categorie === 'Materiel' ? '—' : article.seuil_alerte}</span>
           </div>
           <div className={styles.showRow}>
             <span className={styles.showLabel}>Créé le</span>

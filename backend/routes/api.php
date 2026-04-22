@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Catalog
     Route::apiResource('articles', ArticleApiController::class);
+    Route::get('articles-archived', [ArticleApiController::class, 'archived']);
+    Route::post('articles/{id}/restore', [ArticleApiController::class, 'restore']);
     Route::apiResource('fournisseurs', FournisseurApiController::class);
 
     // Procurement

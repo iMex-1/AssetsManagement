@@ -19,12 +19,16 @@ export function ArticleForm() {
   useEffect(() => {
     if (!isEdit) return
     getArticle(id).then(({ data }) => {
-      setForm({ designation: data.designation, categorie: data.categorie, stock_actuel: data.stock_actuel, seuil_alerte: data.seuil_alerte })
+      setForm({ designation: data.designation, categorie: data.categorie, stock_actuel: data.stock_actuel, seuil_alerte: data.seuil_alerte ?? 0 })
       setLoading(false)
     })
   }, [id, isEdit])
 
-  const set = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+  const set = (field) => (e) => {
+    const next = { ...form, [field]: e.target.value }
+    if (field === 'categorie' && e.target.value === 'Materiel') next.seuil_alerte = 0
+    setForm(next)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -66,9 +70,11 @@ export function ArticleForm() {
             <FormField label="Stock actuel" error={errors.stock_actuel?.[0]} required>
               <Input type="number" min="0" value={form.stock_actuel} onChange={set('stock_actuel')} error={errors.stock_actuel?.[0]} required />
             </FormField>
-            <FormField label="Seuil d'alerte" error={errors.seuil_alerte?.[0]} required>
-              <Input type="number" min="0" value={form.seuil_alerte} onChange={set('seuil_alerte')} error={errors.seuil_alerte?.[0]} required />
-            </FormField>
+            {form.categorie !== 'Materiel' && (
+              <FormField label="Seuil d'alerte" error={errors.seuil_alerte?.[0]} required>
+                <Input type="number" min="0" value={form.seuil_alerte} onChange={set('seuil_alerte')} error={errors.seuil_alerte?.[0]} required />
+              </FormField>
+            )}
           </div>
 
           <div className={styles.formActions}>

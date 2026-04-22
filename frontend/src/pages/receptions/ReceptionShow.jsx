@@ -20,6 +20,9 @@ export function ReceptionShow() {
     <div>
       <div className={styles.pageHeader}>
         <h2 className={styles.pageTitle}>Réception — {reception.numero_doc}</h2>
+        <Button variant="secondary" onClick={() => window.open(`/receptions/${id}/print`, '_blank')}>
+          🖨 Imprimer / PDF
+        </Button>
       </div>
 
       <div className={styles.showCard}>

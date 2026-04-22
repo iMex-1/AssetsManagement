@@ -31,22 +31,47 @@ class ReceptionApiController extends Controller
         $validated = $request->validate([
             'fournisseur_id'   => 'required|exists:fournisseurs,id',
             'type_doc'         => 'required|in:Marche,Bon de Commande',
-            'numero_doc'       => 'required|string|max:100',
             'date_reception'   => 'required|date',
             'lignes'           => 'required|array|min:1',
-            'lignes.*.article_id'     => 'required|exists:articles,id',
-            'lignes.*.quantite_recue' => 'required|integer|min:1',
+            'lignes.*.article_id'              => 'nullable|exists:articles,id',
+            'lignes.*.quantite_recue'          => 'required|integer|min:1',
+            // New article inline creation fields
+            'lignes.*.article_data.designation' => 'required_without:lignes.*.article_id|string|max:255',
+            'lignes.*.article_data.categorie'   => 'required_without:lignes.*.article_id|in:Materiel,Fourniture',
+            'lignes.*.article_data.seuil_alerte'=> 'nullable|integer|min:0',
         ]);
 
-        DB::transaction(function () use ($validated, &$reception) {
+        // Auto-generate document number: REC-YYYYMM-XXXX
+        $yearMonth = now()->format('Ym');
+        $count = Reception::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->count() + 1;
+        $numeroDoc = 'REC-' . $yearMonth . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        DB::transaction(function () use ($validated, $numeroDoc, &$reception) {
             $reception = Reception::create([
                 'fournisseur_id' => $validated['fournisseur_id'],
                 'type_doc'       => $validated['type_doc'],
-                'numero_doc'     => $validated['numero_doc'],
+                'numero_doc'     => $numeroDoc,
                 'date_reception' => $validated['date_reception'],
             ]);
 
             foreach ($validated['lignes'] as $ligne) {
+                // If article_id is missing, create the article inline
+                if (empty($ligne['article_id']) && !empty($ligne['article_data'])) {
+                    $articleData = $ligne['article_data'];
+                    
+                    // Materiel has no alert threshold
+                    if (($articleData['categorie'] ?? '') === 'Materiel') {
+                        $articleData['seuil_alerte'] = null;
+                    }
+                    
+                    $articleData['stock_actuel'] = 0; // Will be incremented below
+                    
+                    $article = Article::create($articleData);
+                    $ligne['article_id'] = $article->id;
+                }
+
                 $reception->lignes()->create([
                     'article_id'     => $ligne['article_id'],
                     'quantite_recue' => $ligne['quantite_recue'],
