@@ -52,7 +52,7 @@ export function ArticleList() {
 
       <div className={styles.pageHeader}>
         <h2 className={styles.pageTitle}>Articles</h2>
-        {hasPermission('manage_items') && (
+        {hasPermission('gerer_articles') && (
           <Button variant="secondary" onClick={() => navigate('/articles/archives')}>Archives</Button>
         )}
       </div>
@@ -109,7 +109,7 @@ export function ArticleList() {
                   <td>{a.categorie === 'Materiel' ? '—' : a.seuil_alerte}</td>
                   <td className={styles.actions}>
                     <Link to={`/articles/${a.id}`} className={styles.actionLink}>Voir</Link>
-                    {hasPermission('manage_items') && (
+                    {hasPermission('gerer_articles') && (
                       <>
                         <Link to={`/articles/${a.id}/edit`} className={styles.actionLink}>Modifier</Link>
                         <button className={styles.actionDanger} onClick={() => setDeleteTarget(a)}>
@@ -117,7 +117,7 @@ export function ArticleList() {
                         </button>
                       </>
                     )}
-                    {hasPermission('manage_items') && a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte && (
+                    {hasPermission('gerer_articles') && a.categorie === 'Fourniture' && a.stock_actuel <= a.seuil_alerte && (
                       <button
                         className={styles.actionReorder}
                         onClick={() => navigate(`/receptions/create?article_id=${a.id}`)}

@@ -39,7 +39,6 @@ Three roles exist in the system:
 `manage_categories` `manage_items` `submit_request` `approve_request` `confirm_receipt` `manage_assets` `report_damage` `manage_consumables` `manage_assignments` `view_reports` `view_own_dept`
 
 ---
-theHunter: Call of the Wild
 ## Core Workflow
 
 ```
@@ -124,6 +123,7 @@ AssetsMan/
 | `RoleApiController.php` | `GET/POST /roles` `GET/PUT/DELETE /roles/{id}` | Full CRUD for roles with permission sync. |
 | `PermissionApiController.php` | `GET/POST /permissions` `GET/PUT/DELETE /permissions/{id}` | Full CRUD for permissions. |
 | `ServiceApiController.php` | `GET /services` | Read-only list of services for dropdowns. |
+| `StatsApiController.php` | `GET /stats` | Aggregated report data: article totals, low-stock list, demande breakdown by status with approval rate, monthly reception counts (last 6 months), and top articles by affectation volume. Requires `view_reports` permission. |
 
 ### Services (`backend/app/Services/`)
 
@@ -202,7 +202,7 @@ Each file is a thin wrapper around the Axios client. All requests automatically 
 |------|------------------|
 | `client.js` | Axios instance with base URL `/api`, Bearer token interceptor, and 401 → redirect to `/login` handler |
 | `auth.js` | `login()`, `logout()`, `me()` |
-| `articles.js` | `getArticles()`, `getArticle()`, `createArticle()`, `updateArticle()`, `deleteArticle()` |
+| `articles.js` | `getArticles()`, `getArticle()`, `createArticle()`, `updateArticle()`, `deleteArticle()`, `getArchivedArticles()`, `restoreArticle()` |
 | `fournisseurs.js` | `getFournisseurs()`, `getFournisseur()`, `createFournisseur()`, `updateFournisseur()`, `deleteFournisseur()` |
 | `receptions.js` | `getReceptions()`, `getReception()`, `createReception()`, `deleteReception()` |
 | `demandes.js` | `getDemandes()`, `getDemande()`, `createDemande()`, `updateDemandeStatut()`, `deleteDemande()` |
@@ -211,6 +211,7 @@ Each file is a thin wrapper around the Axios client. All requests automatically 
 | `roles.js` | `getRoles()`, `getRole()`, `createRole()`, `updateRole()`, `deleteRole()` |
 | `permissions.js` | `getPermissions()`, `createPermission()`, `updatePermission()`, `deletePermission()` |
 | `services.js` | `getServices()` |
+| `stats.js` | `getStats()` |
 
 ### Layout Components (`frontend/src/components/layout/`)
 
@@ -262,10 +263,11 @@ Each file is a thin wrapper around the Axios client. All requests automatically 
 
 | File | Purpose |
 |------|---------|
-| `articles/ArticleList.jsx` | Paginated table of all articles. Search by designation, filter by category. Red badge on low-stock rows. Permission-gated create/edit/delete actions. |
+| `articles/ArticleList.jsx` | Paginated table of all articles. Search by designation, filter by category. Red badge on low-stock rows. Permission-gated create/edit/delete actions. Links to the archives page. |
 | `articles/ArticleForm.jsx` | Create and edit form. Fields: designation, categorie (select), stock_actuel, seuil_alerte. Handles 422 validation errors inline. |
 | `articles/ArticleShow.jsx` | Detail view of a single article. Shows low-stock warning banner if applicable. Permission-gated edit button. |
-| `articles/Articles.module.css` | Shared styles for all three article pages. |
+| `articles/ArticleArchives.jsx` | Paginated list of soft-deleted articles. Supports search. Each row shows the archive date and a "Restaurer" action that calls `restoreArticle()` and returns the article to the active catalog. |
+| `articles/Articles.module.css` | Shared styles for all article pages. |
 
 #### Fournisseurs
 
@@ -281,8 +283,10 @@ Each file is a thin wrapper around the Axios client. All requests automatically 
 |------|---------|
 | `receptions/ReceptionList.jsx` | Paginated table of all receptions showing document number, type, supplier, date, and article count. |
 | `receptions/ReceptionForm.jsx` | Create form with header fields (fournisseur, type_doc, numero_doc, date) and a dynamic line-item table. Lines can be added/removed. On submit, stock is auto-incremented server-side. |
-| `receptions/ReceptionShow.jsx` | Detail view showing all header fields and the full list of received articles with quantities. |
+| `receptions/ReceptionShow.jsx` | Detail view showing all header fields and the full list of received articles with quantities. Links to the print view. |
+| `receptions/ReceptionPrint.jsx` | Print-optimized view of a single reception. Renders a formatted bon de réception with supplier info, article table with totals, and three signature blocks. Triggers `window.print()` automatically on load. |
 | `receptions/Receptions.module.css` | Shared styles including the dynamic lignes table. |
+| `receptions/ReceptionPrint.module.css` | Print-specific styles: clean layout, signature blocks, footer. |
 
 #### Demandes
 
@@ -316,11 +320,18 @@ Each file is a thin wrapper around the Axios client. All requests automatically 
 | `permissions/PermissionForm.jsx` | Single name field form. |
 | `permissions/Permissions.module.css` | Shared styles. |
 
+#### Rapports
+
+| File | Purpose |
+|------|---------|
+| `rapports/Rapports.jsx` | Full analytics dashboard. Loads data from `GET /stats`. Displays 7 stat cards (total articles, total stock units, low-stock count, total demandes, approval rate, total receptions, total affectations). Below the cards: a demande status breakdown with proportional bars, a 6-month reception bar chart, a top-articles-by-affectation table, and a low-stock articles table with click-through to article detail. Requires `view_reports` permission (enforced server-side). |
+| `rapports/Rapports.module.css` | Stat card grid, bar chart columns, status bar rows, card layout. |
+
 #### Utility Pages
 
 | File | Purpose |
 |------|---------|
-| `ComingSoon.jsx` | Placeholder page for routes not yet implemented (Rapports). Shows a construction icon and a back button. |
+| `ComingSoon.jsx` | Placeholder page for routes not yet implemented. Shows a construction icon and a back button. |
 | `ComingSoon.module.css` | Centered layout for the placeholder. |
 | `ErrorPage.jsx` | React Router error boundary page. Shows a 404 icon for not-found routes, or a generic error icon for runtime errors. Replaces the default React Router error screen. |
 | `ErrorPage.module.css` | Full-screen centered error layout. |

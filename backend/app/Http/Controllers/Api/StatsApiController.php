@@ -16,8 +16,8 @@ class StatsApiController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (! $request->user()->can('view_reports')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! $request->user()->can('voir_rapports')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $articles = Article::all(['id', 'designation', 'categorie', 'stock_actuel', 'seuil_alerte']);

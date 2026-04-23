@@ -52,7 +52,7 @@ config/
 - Route names for API resources are explicitly namespaced: `api.resource.action`
 
 ### RBAC
-- Roles: `Admin`, `Dept_Head`, `Overseer`
+- Roles: `Admin`, `Chef_Departement`, `Directeur`
 - Always use `guard_name: 'web'` when creating roles/permissions
 - Use `firstOrCreate` in seeders to keep them idempotent
 - Reset permission cache at the start of seeders: `app()[PermissionRegistrar::class]->forgetCachedPermissions()`

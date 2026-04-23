@@ -14,20 +14,18 @@ class TestUserSeeder extends Seeder
             ['email' => 'chef@example.com'],
             [
                 'nom_complet' => 'Chef Département',
-                'role' => 'Dept_Head',
                 'password' => Hash::make('password'),
             ]
         );
-        $chef->assignRole('Dept_Head');
+        $chef->assignRole('Chef_Departement');
 
-        $overseer = User::firstOrCreate(
-            ['email' => 'overseer@example.com'],
+        $directeur = User::firstOrCreate(
+            ['email' => 'directeur@example.com'],
             [
-                'nom_complet' => 'Observateur',
-                'role' => 'Overseer',
+                'nom_complet' => 'Directeur',
                 'password' => Hash::make('password'),
             ]
         );
-        $overseer->assignRole('Overseer');
+        $directeur->assignRole('Directeur');
     }
 }

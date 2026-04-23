@@ -42,7 +42,7 @@ export function DemandeShow() {
 
   if (!demande) return <Spinner />
 
-  const canApprove = hasPermission('approve_request')
+  const canApprove = hasPermission('approuver_demande')
 
   return (
     <div>

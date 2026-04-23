@@ -59,7 +59,7 @@ export function ArticleShow() {
         </div>
 
         <div className={styles.showActions}>
-          {hasPermission('manage_items') && (
+          {hasPermission('gerer_articles') && (
             <Button onClick={() => navigate(`/articles/${id}/edit`)}>Modifier</Button>
           )}
           <Button variant="secondary" onClick={() => navigate('/articles')}>Retour</Button>

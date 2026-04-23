@@ -15,7 +15,7 @@ class UserApiController extends Controller
     public function index(Request $request): JsonResponse
     {
         if (! $request->user()->hasRole('Admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $users = User::with('roles')
@@ -30,7 +30,7 @@ class UserApiController extends Controller
     public function store(Request $request): JsonResponse
     {
         if (! $request->user()->hasRole('Admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([
@@ -58,7 +58,7 @@ class UserApiController extends Controller
     public function show(User $user): JsonResponse
     {
         if (! request()->user()->hasRole('Admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         return response()->json($this->format($user->load('roles')));
@@ -67,7 +67,7 @@ class UserApiController extends Controller
     public function update(Request $request, User $user): JsonResponse
     {
         if (! $request->user()->hasRole('Admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([
@@ -95,12 +95,12 @@ class UserApiController extends Controller
     public function destroy(User $user): JsonResponse
     {
         if (! request()->user()->hasRole('Admin')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully.']);
+        return response()->json(['message' => 'Utilisateur supprimé.']);
     }
 
     private function format(User $user): array

@@ -99,7 +99,7 @@ export function AffectationForm() {
 
           {selectedArticle && selectedArticle.stock_actuel <= selectedArticle.seuil_alerte && (
             <div className={styles.stockWarning}>
-              Stock bas — disponible: {selectedArticle.stock_actuel}
+              Stock bas — disponible : {selectedArticle.stock_actuel}
             </div>
           )}
 

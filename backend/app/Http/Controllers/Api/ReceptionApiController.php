@@ -24,8 +24,8 @@ class ReceptionApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! $request->user()->can('manage_items')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! $request->user()->can('gerer_articles')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([
@@ -93,8 +93,8 @@ class ReceptionApiController extends Controller
 
     public function destroy(Reception $reception): JsonResponse
     {
-        if (! request()->user()->can('manage_items')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! request()->user()->can('gerer_articles')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $reception->delete();
