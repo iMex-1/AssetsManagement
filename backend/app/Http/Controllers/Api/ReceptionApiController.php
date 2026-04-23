@@ -47,7 +47,7 @@ class ReceptionApiController extends Controller
         $count = Reception::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
             ->count() + 1;
-        $numeroDoc = 'REC-' . $yearMonth . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
+        $numeroDoc = 'REC-' . $yearMonth . '-' . str_pad((string) $count, 4, '0', STR_PAD_LEFT);
 
         DB::transaction(function () use ($validated, $numeroDoc, &$reception) {
             $reception = Reception::create([
