@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('categorie'); // Materiel ou Fourniture
             $table->integer('stock_actuel')->default(0); // Updated automatically
             $table->integer('seuil_alerte')->default(0); // For low-stock alerts
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -14,6 +14,11 @@ class LigneReception extends Model
         'reception_id',
         'article_id',
         'quantite_recue',
+        'prix_unitaire',
+    ];
+
+    protected $casts = [
+        'prix_unitaire' => 'decimal:2',
     ];
 
     public function reception(): BelongsTo

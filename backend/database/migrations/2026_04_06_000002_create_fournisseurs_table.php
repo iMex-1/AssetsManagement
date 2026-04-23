@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('raison_sociale');
             $table->string('telephone')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

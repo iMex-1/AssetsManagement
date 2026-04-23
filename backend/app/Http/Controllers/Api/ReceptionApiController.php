@@ -35,6 +35,7 @@ class ReceptionApiController extends Controller
             'lignes'           => 'required|array|min:1',
             'lignes.*.article_id'              => 'nullable|exists:articles,id',
             'lignes.*.quantite_recue'          => 'required|integer|min:1',
+            'lignes.*.prix_unitaire'           => 'required|numeric|min:0',
             // New article inline creation fields
             'lignes.*.article_data.designation' => 'required_without:lignes.*.article_id|string|max:255',
             'lignes.*.article_data.categorie'   => 'required_without:lignes.*.article_id|in:Materiel,Fourniture',
@@ -75,6 +76,7 @@ class ReceptionApiController extends Controller
                 $reception->lignes()->create([
                     'article_id'     => $ligne['article_id'],
                     'quantite_recue' => $ligne['quantite_recue'],
+                    'prix_unitaire'  => $ligne['prix_unitaire'],
                 ]);
 
                 // Auto-increment stock

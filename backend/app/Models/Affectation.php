@@ -17,14 +17,17 @@ class Affectation extends Model
         'article_id',
         'service_id',
         'quantite_affectee',
-        'cible',           // ex: Matricule Vehicule, Poteau X, Bureau
-        'coordonnees_gps', // Pour eclairage
-        'photo_jointe',    // Preuve d'installation
+        'cible',
+        'coordonnees_gps',
+        'photo_jointe',
         'date_action',
+        'etat',
+        'date_fin',
     ];
 
     protected $casts = [
         'date_action' => 'date',
+        'date_fin'    => 'date',
     ];
 
     public function article(): BelongsTo

@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Assignments
     Route::apiResource('affectations', AffectationApiController::class)->except(['update']);
+    Route::patch('affectations/{affectation}/etat', [AffectationApiController::class, 'updateEtat']);
 
     // Services (read-only)
     Route::get('services', [ServiceApiController::class, 'index']);

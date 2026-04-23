@@ -8,21 +8,27 @@ import { useAuth } from '../../hooks/useAuth'
 import styles from './Sidebar.module.css'
 
 const NAV = [
-  { label: 'Tableau de bord', to: '/dashboard',    roles: null,                       icon: MdDashboard },
-  { type: 'section', label: 'Catalogue',            roles: ['Admin'] },
-  { label: 'Articles',        to: '/articles',      roles: ['Admin'],                  icon: MdInventory },
-  { label: 'Fournisseurs',    to: '/fournisseurs',  roles: ['Admin'],                  icon: MdStorefront },
-  { label: 'Réceptions',      to: '/receptions',    roles: ['Admin'],                  icon: MdLocalShipping },
-  { type: 'section', label: 'Opérations',           roles: null },
-  { label: 'Demandes',        to: '/demandes',      roles: null,                       icon: MdAssignment },
-  { label: 'Affectations',    to: '/affectations',  roles: ['Admin'],                  icon: MdSwapHoriz },
+  { label: 'Tableau de bord', to: '/dashboard',    roles: null,                                    icon: MdDashboard },
+  { type: 'section', label: 'Catalogue',            roles: ['Admin', 'Chef_Service'] },
+  { label: 'Articles',        to: '/articles',      roles: ['Admin', 'Chef_Service'],               icon: MdInventory },
+  { label: 'Fournisseurs',    to: '/fournisseurs',  roles: ['Admin'],                               icon: MdStorefront },
+  { label: 'Réceptions',      to: '/receptions',    roles: ['Admin'],                               icon: MdLocalShipping },
+  { type: 'section', label: 'Opérations',           roles: ['Admin', 'Chef_Service'] },
+  { label: 'Demandes',        to: '/demandes',      roles: ['Admin', 'Chef_Service'],               icon: MdAssignment },
+  { label: 'Affectations',    to: '/affectations',  roles: ['Admin', 'Chef_Service'],               icon: MdSwapHoriz },
   { type: 'section', label: 'Rapports',             roles: ['Admin', 'Directeur'] },
-  { label: 'Rapports',        to: '/rapports',      roles: ['Admin', 'Directeur'],      icon: MdBarChart },
+  { label: 'Rapports',        to: '/rapports',      roles: ['Admin', 'Directeur'],                  icon: MdBarChart },
   { type: 'section', label: 'Administration',       roles: ['Admin'] },
-  { label: 'Utilisateurs',    to: '/users',         roles: ['Admin'],                  icon: MdPeople },
-  { label: 'Rôles',           to: '/roles',         roles: ['Admin'],                  icon: MdShield },
-  { label: 'Permissions',     to: '/permissions',   roles: ['Admin'],                  icon: MdKey },
+  { label: 'Utilisateurs',    to: '/users',         roles: ['Admin'],                               icon: MdPeople },
+  { label: 'Rôles',           to: '/roles',         roles: ['Admin'],                               icon: MdShield },
+  { label: 'Permissions',     to: '/permissions',   roles: ['Admin'],                               icon: MdKey },
 ]
+
+const ROLE_LABELS = {
+  Admin:         'Administrateur',
+  Chef_Service:  'Chef de service',
+  Directeur:     'Directeur',
+}
 
 export function Sidebar() {
   const { user, hasRole } = useAuth()
@@ -67,7 +73,7 @@ export function Sidebar() {
         </div>
         <div className={styles.userMeta}>
           <span className={styles.userName}>{user?.nom_complet}</span>
-          <span className={styles.userRole}>{user?.roles?.[0] ?? '—'}</span>
+          <span className={styles.userRole}>{ROLE_LABELS[user?.roles?.[0]] ?? user?.roles?.[0] ?? '—'}</span>
         </div>
       </div>
     </aside>

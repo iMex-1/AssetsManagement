@@ -89,3 +89,12 @@
 .clickableRow { cursor: pointer; }
 .clickableRow:hover td { background: var(--neutral-50); }
 .empty { font-size: 13px; color: var(--neutral-500); padding: 12px 0; }
+
+/* Heatmap */
+.heatmapCard { grid-column: 1 / -1; }
+.heatmapScroll { overflow-x: auto; }
+.heatmapTable { border-collapse: collapse; font-size: 12px; min-width: 600px; }
+.heatmapTable th { padding: 6px 10px; font-size: 10px; font-weight: 600; color: var(--neutral-500); text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+.heatmapTable td { padding: 5px 10px; border: 1px solid var(--neutral-100); text-align: center; min-width: 52px; }
+.heatmapLabel { text-align: left !important; font-weight: 500; color: var(--neutral-700); white-space: nowrap; padding-right: 16px !important; }
+.heatCell { border-radius: 3px; display: inline-block; width: 100%; padding: 4px 0; font-size: 11px; font-weight: 600; }

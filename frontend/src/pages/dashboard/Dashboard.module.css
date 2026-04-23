@@ -43,3 +43,8 @@
 .name { font-weight: 500; color: var(--neutral-900); }
 .stockLow { color: var(--danger); font-weight: 600; }
 .muted { color: var(--neutral-500); }
+
+.sectionHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sectionHeader .sectionTitle { margin-bottom: 0; }
+.empty { padding: 20px 16px; color: var(--neutral-500); font-size: 13px; }
+.statCard.warning { border-left-color: var(--warning); }
