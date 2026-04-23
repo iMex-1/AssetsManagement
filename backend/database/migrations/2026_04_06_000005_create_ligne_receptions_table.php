@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('reception_id')->constrained('receptions')->onDelete('cascade');
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
             $table->integer('quantite_recue');
+            $table->decimal('prix_unitaire', 12, 2);
             $table->timestamps();
         });
     }

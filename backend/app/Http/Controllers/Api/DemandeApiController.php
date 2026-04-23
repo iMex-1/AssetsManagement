@@ -20,8 +20,8 @@ class DemandeApiController extends Controller
     {
         $query = Demande::with(['utilisateur', 'lignes.article']);
 
-        // Chef_Departement ne voit que ses propres demandes
-        if ($request->user()->hasRole('Chef_Departement') && ! $request->user()->hasRole('Admin')) {
+        // Chef_Service ne voit que ses propres demandes
+        if ($request->user()->hasRole('Chef_Service') && ! $request->user()->hasRole('Admin')) {
             $query->where('utilisateur_id', $request->user()->id);
         }
 

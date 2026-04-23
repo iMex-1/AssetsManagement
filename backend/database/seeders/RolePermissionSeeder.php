@@ -20,7 +20,7 @@ class RolePermissionSeeder extends Seeder
             'soumettre_demande',
             'approuver_demande',
             'confirmer_reception',
-            'signaler_dommage',
+            'signaler_panne',
             'gerer_affectations',
             'voir_rapports',
             'voir_son_service',
@@ -33,11 +33,11 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
         $admin->syncPermissions($permissions);
 
-        $deptHead = Role::firstOrCreate(['name' => 'Chef_Departement', 'guard_name' => 'web']);
-        $deptHead->syncPermissions([
+        $chefService = Role::firstOrCreate(['name' => 'Chef_Service', 'guard_name' => 'web']);
+        $chefService->syncPermissions([
             'soumettre_demande',
             'confirmer_reception',
-            'signaler_dommage',
+            'signaler_panne',
             'voir_son_service',
         ]);
 

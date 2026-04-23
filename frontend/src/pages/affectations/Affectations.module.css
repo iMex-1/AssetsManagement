@@ -46,3 +46,12 @@
 .photoCard { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
 .photoLabel { font-size: 12px; font-weight: 600; color: var(--neutral-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
 .photoFull { max-width: 320px; border-radius: var(--radius); border: 1px solid var(--neutral-200); }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 2px solid var(--neutral-200); }
+.tab { padding: 8px 18px; font-size: 13px; font-weight: 500; color: var(--neutral-500); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s; }
+.tab:hover { color: var(--neutral-900); }
+.tabActive { color: var(--primary-light); border-bottom-color: var(--primary-light); }
+
+/* État workflow */
+.workflowActions { display: flex; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--neutral-100); flex-wrap: wrap; }

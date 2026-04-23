@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('type_doc'); // Marche ou Bon de Commande
             $table->string('numero_doc');
             $table->date('date_reception');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

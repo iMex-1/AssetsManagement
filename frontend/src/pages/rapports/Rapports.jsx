@@ -16,6 +16,49 @@ function StatCard({ label, value, icon: Icon, variant = 'default', onClick }) {
   )
 }
 
+// Interpolate white → primary-blue based on intensity 0..1
+function heatColor(intensity) {
+  if (intensity === 0) return { background: 'var(--neutral-50)', color: 'var(--neutral-300)' }
+  const alpha = Math.max(0.12, intensity)
+  return { background: `rgba(59,130,246,${alpha})`, color: intensity > 0.5 ? '#fff' : 'var(--neutral-900)' }
+}
+
+function Heatmap({ heatmap }) {
+  if (!heatmap?.services?.length) {
+    return <p className={styles.empty}>Aucune donnée de livraison disponible.</p>
+  }
+  const { months, services } = heatmap
+  const maxVal = Math.max(...services.flatMap((s) => s.data), 1)
+
+  return (
+    <div className={styles.heatmapScroll}>
+      <table className={styles.heatmapTable}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: 'left' }}>Service</th>
+            {months.map((m) => <th key={m}>{m}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {services.map((s) => (
+            <tr key={s.service_id}>
+              <td className={`${styles.heatmapLabel}`}>{s.label}</td>
+              {s.data.map((val, i) => {
+                const style = heatColor(val / maxVal)
+                return (
+                  <td key={i}>
+                    <span className={styles.heatCell} style={style}>{val || ''}</span>
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export function Rapports() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
@@ -34,10 +77,14 @@ export function Rapports() {
   if (loading) return <Spinner />
   if (error) return <p style={{ color: 'var(--danger)', padding: 24 }}>{error}</p>
 
-  const { articles, demandes, receptions, affectations } = stats
-  const byStatut = demandes.by_statut ?? {}
+  const { articles, demandes, receptions, affectations, finances, heatmap } = stats
+  const byStatut   = demandes.by_statut ?? {}
+  const parEtat    = affectations.par_etat ?? {}
   const maxMonthly = Math.max(...(receptions.monthly ?? []).map((m) => m.count), 1)
   const topArticles = Object.entries(affectations.top_articles ?? {})
+
+  const ETAT_VARIANT = { en_service: 'success', en_panne: 'danger', en_reparation: 'warning', hors_service: 'neutral' }
+  const ETAT_LABEL   = { en_service: 'En service', en_panne: 'En panne', en_reparation: 'En réparation', hors_service: 'Hors service' }
 
   return (
     <div className={styles.page}>
@@ -49,6 +96,7 @@ export function Rapports() {
         <StatCard label="Taux d'approbation" value={`${demandes.approval_rate}%`} icon={MdBarChart} variant="success" />
         <StatCard label="Total réceptions" value={receptions.total} icon={MdLocalShipping} onClick={() => navigate('/receptions')} />
         <StatCard label="Total affectations" value={affectations.total} icon={MdSwapHoriz} onClick={() => navigate('/affectations')} />
+        <StatCard label="Total dépenses (DH)" value={(finances.total_depenses ?? 0).toLocaleString('fr-FR')} icon={MdBarChart} variant="success" />
       </div>
 
       <div className={styles.grid}>
@@ -70,6 +118,25 @@ export function Rapports() {
                   }} />
                 </div>
                 <Badge variant={variant}>{byStatut[key] ?? 0}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* État des affectations */}
+        <div className={styles.card}>
+          <h3 className={styles.cardTitle}>État des affectations</h3>
+          <div className={styles.statusList}>
+            {Object.entries(ETAT_LABEL).map(([key, label]) => (
+              <div key={key} className={styles.statusRow}>
+                <span className={styles.statusLabel}>{label}</span>
+                <div className={styles.barWrap}>
+                  <div className={styles.bar} style={{
+                    width: affectations.total ? `${((parEtat[key] ?? 0) / affectations.total) * 100}%` : '0%',
+                    background: key === 'en_service' ? 'var(--success)' : key === 'en_panne' ? 'var(--danger)' : key === 'en_reparation' ? 'var(--warning)' : 'var(--neutral-300)',
+                  }} />
+                </div>
+                <Badge variant={ETAT_VARIANT[key]}>{parEtat[key] ?? 0}</Badge>
               </div>
             ))}
           </div>
@@ -130,6 +197,12 @@ export function Rapports() {
               </tbody>
             </table>
           )}
+        </div>
+
+        {/* Heatmap activité par service */}
+        <div className={`${styles.card} ${styles.heatmapCard}`}>
+          <h3 className={styles.cardTitle}>Activité par service — articles livrés (12 derniers mois)</h3>
+          <Heatmap heatmap={heatmap} />
         </div>
       </div>
     </div>

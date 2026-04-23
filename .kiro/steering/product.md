@@ -7,12 +7,12 @@ PublicAsset OS is a high-accountability asset and consumable management system f
 | Role | Responsibilities |
 |------|-----------------|
 | Admin | Full access: manage catalog, approve requests, manage assets/consumables, generate QR codes |
-| Chef_Departement | Submit requests, confirm receipt (digital handshake), report damage |
-| Directeur | View reports, audit expenditure and asset depreciation |
+| Chef_Service | Submit requests, confirm receipt, signal breakdowns, view own service |
+| Directeur | View reports, audit expenditure and asset depreciation, global inventory overview |
 
 ## Key Permissions
 
-`gerer_articles`, `soumettre_demande`, `approuver_demande`, `confirmer_reception`, `signaler_dommage`, `gerer_affectations`, `voir_rapports`, `voir_son_service`
+`gerer_articles`, `soumettre_demande`, `approuver_demande`, `confirmer_reception`, `signaler_panne`, `gerer_affectations`, `voir_rapports`, `voir_son_service`
 
 ## Killer Features
 

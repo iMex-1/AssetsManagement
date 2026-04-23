@@ -33,9 +33,63 @@ class AffectationApiController extends Controller
             $query->where('service_id', $request->service_id);
         }
 
+        if ($request->filled('etat')) {
+            $query->where('etat', $request->etat);
+        }
+
+        // historique=1 inclut les soft-deleted
+        if ($request->boolean('historique')) {
+            $query->withTrashed();
+        }
+
         $affectations = $query->latest()->paginate($request->integer('per_page', 25));
 
         return response()->json($affectations);
+    }
+
+    public function updateEtat(Request $request, Affectation $affectation): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'etat' => 'required|in:en_service,en_panne,en_reparation,hors_service',
+        ]);
+
+        $newEtat = $validated['etat'];
+
+        // Chef_Service peut uniquement signaler en_panne
+        if ($user->can('signaler_panne') && ! $user->hasRole('Admin')) {
+            if ($newEtat !== 'en_panne') {
+                return response()->json(['message' => 'Vous pouvez uniquement signaler une panne.'], 403);
+            }
+            // Restrict to their own service
+            if ($affectation->service_id !== $user->service_id) {
+                return response()->json(['message' => 'Accès refusé.'], 403);
+            }
+        } elseif (! $user->can('gerer_affectations')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
+
+        DB::transaction(function () use ($affectation, $newEtat) {
+            $previousEtat = $affectation->etat;
+
+            // hors_service : décrémenter le stock (article mis au rebut)
+            if ($newEtat === 'hors_service' && $previousEtat !== 'hors_service') {
+                $affectation->article->decrement('stock_actuel', $affectation->quantite_affectee);
+                $affectation->date_fin = now()->toDateString();
+            }
+
+            // Si on revient de hors_service (réparation réussie), on restitue le stock
+            if ($previousEtat === 'hors_service' && $newEtat !== 'hors_service') {
+                $affectation->article->increment('stock_actuel', $affectation->quantite_affectee);
+                $affectation->date_fin = null;
+            }
+
+            $affectation->etat = $newEtat;
+            $affectation->save();
+        });
+
+        return response()->json($affectation->load(['article', 'service']));
     }
 
     public function store(Request $request): JsonResponse

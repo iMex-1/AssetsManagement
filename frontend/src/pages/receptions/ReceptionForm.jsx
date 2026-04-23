@@ -13,6 +13,7 @@ const emptyLigne = (articleId = '') => ({
   mode: articleId ? 'existing' : 'existing', // 'existing' | 'new'
   article_id: articleId,
   quantite_recue: 1,
+  prix_unitaire: '',
   article_data: { designation: '', categorie: '', seuil_alerte: 0 },
 })
 
@@ -77,9 +78,9 @@ export function ReceptionForm() {
   const buildPayload = () => {
     return lignes.map((l) => {
       if (l.mode === 'existing') {
-        return { article_id: l.article_id, quantite_recue: l.quantite_recue }
+        return { article_id: l.article_id, quantite_recue: l.quantite_recue, prix_unitaire: l.prix_unitaire }
       }
-      return { article_data: l.article_data, quantite_recue: l.quantite_recue }
+      return { article_data: l.article_data, quantite_recue: l.quantite_recue, prix_unitaire: l.prix_unitaire }
     })
   }
 
@@ -220,7 +221,16 @@ export function ReceptionForm() {
                         required
                       />
                     </FormField>
-                  </div>
+                    <FormField label="Prix unitaire (DH)" error={errors[`lignes.${i}.prix_unitaire`]?.[0]} required>
+                      <Input
+                        type="number" min="0" step="0.01"
+                        value={l.prix_unitaire ?? ''}
+                        onChange={(e) => setLigne(i, 'prix_unitaire', e.target.value)}
+                        error={errors[`lignes.${i}.prix_unitaire`]?.[0]}
+                        placeholder="0.00"
+                        required
+                      />
+                    </FormField>                  </div>
 
                   {lignes.length > 1 && (
                     <button type="button" className={styles.removeLigneCard} onClick={() => removeLigne(i)}>

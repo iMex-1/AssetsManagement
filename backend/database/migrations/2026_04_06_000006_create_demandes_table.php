@@ -14,6 +14,7 @@ return new class extends Migration
             $table->date('date_creation');
             $table->string('statut')->default('En_attente'); // En_attente, Valide, Livre
             $table->string('bon_scanne')->nullable(); // URL fichier (ajouté lors de la livraison)
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('coordonnees_gps')->nullable(); // Pour eclairage
             $table->string('photo_jointe')->nullable(); // Preuve d'installation
             $table->date('date_action');
+            $table->enum('etat', ['en_service', 'en_panne', 'en_reparation', 'hors_service'])->default('en_service');
+            $table->date('date_fin')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
