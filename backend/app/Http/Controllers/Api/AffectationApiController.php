@@ -20,10 +20,10 @@ class AffectationApiController extends Controller
     {
         $query = Affectation::with(['article', 'service']);
 
-        // view_own_dept: filter by user's service
+        // voir_son_service : filtrer par service de l'utilisateur
         if (
             ! $request->user()->hasRole('Admin') &&
-            $request->user()->can('view_own_dept') &&
+            $request->user()->can('voir_son_service') &&
             $request->user()->service_id
         ) {
             $query->where('service_id', $request->user()->service_id);
@@ -40,8 +40,8 @@ class AffectationApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! $request->user()->can('manage_assignments')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! $request->user()->can('gerer_affectations')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([
@@ -93,8 +93,8 @@ class AffectationApiController extends Controller
 
     public function destroy(Affectation $affectation): JsonResponse
     {
-        if (! request()->user()->can('manage_assignments')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! request()->user()->can('gerer_affectations')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         // Restore stock on delete

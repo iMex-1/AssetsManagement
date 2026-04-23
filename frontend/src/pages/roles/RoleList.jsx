@@ -56,7 +56,7 @@ export function RoleList() {
               ) : data.map((r) => (
                 <tr key={r.id}>
                   <td className={styles.name}>{r.name}</td>
-                  <td><Badge variant="neutral">{r.permissions?.length ?? 0} permissions</Badge></td>
+                  <td><Badge variant="neutral">{r.permissions?.length ?? 0} permission(s)</Badge></td>
                   <td className={styles.actions}>
                     <button className={styles.actionLink} onClick={() => navigate(`/roles/${r.id}/edit`)}>Modifier</button>
                     <button className={styles.actionDanger} onClick={() => setDeleteTarget(r)}>Supprimer</button>

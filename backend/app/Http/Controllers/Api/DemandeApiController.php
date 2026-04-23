@@ -20,8 +20,8 @@ class DemandeApiController extends Controller
     {
         $query = Demande::with(['utilisateur', 'lignes.article']);
 
-        // Dept_Head sees only their own demandes
-        if ($request->user()->hasRole('Dept_Head') && ! $request->user()->hasRole('Admin')) {
+        // Chef_Departement ne voit que ses propres demandes
+        if ($request->user()->hasRole('Chef_Departement') && ! $request->user()->hasRole('Admin')) {
             $query->where('utilisateur_id', $request->user()->id);
         }
 
@@ -36,8 +36,8 @@ class DemandeApiController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        if (! $request->user()->can('submit_request')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! $request->user()->can('soumettre_demande')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([
@@ -81,8 +81,8 @@ class DemandeApiController extends Controller
 
     public function update(Request $request, Demande $demande): JsonResponse
     {
-        if (! $request->user()->can('approve_request')) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if (! $request->user()->can('approuver_demande')) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
         }
 
         $validated = $request->validate([

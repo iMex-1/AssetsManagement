@@ -22,8 +22,6 @@ class User extends Authenticatable
         'service_id',
         'nom_complet',
         'email',
-        /** @deprecated Display label only — must NOT be used for authorization; use Spatie roles/permissions instead */
-        'role',
         'password',
     ];
 

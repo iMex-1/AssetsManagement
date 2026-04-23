@@ -45,7 +45,7 @@ export function PermissionForm() {
       </div>
       <div className={styles.formCard}>
         <form onSubmit={handleSubmit} className={styles.formGrid}>
-          <FormField label="Nom de la permission" error={errors.name?.[0]} required hint="ex: manage_items, submit_request">
+          <FormField label="Nom de la permission" error={errors.name?.[0]} required hint="ex: gerer_articles, soumettre_demande">
             <Input value={name} onChange={(e) => setName(e.target.value)} error={errors.name?.[0]} required />
           </FormField>
           <div className={styles.formActions}>

@@ -16,17 +16,14 @@ class RolePermissionSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissions = [
-            'manage_categories',
-            'manage_items',
-            'submit_request',
-            'approve_request',
-            'confirm_receipt',
-            'manage_assets',
-            'report_damage',
-            'manage_consumables',
-            'manage_assignments',
-            'view_reports',
-            'view_own_dept',
+            'gerer_articles',
+            'soumettre_demande',
+            'approuver_demande',
+            'confirmer_reception',
+            'signaler_dommage',
+            'gerer_affectations',
+            'voir_rapports',
+            'voir_son_service',
         ];
 
         foreach ($permissions as $permission) {
@@ -36,18 +33,18 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
         $admin->syncPermissions($permissions);
 
-        $deptHead = Role::firstOrCreate(['name' => 'Dept_Head', 'guard_name' => 'web']);
+        $deptHead = Role::firstOrCreate(['name' => 'Chef_Departement', 'guard_name' => 'web']);
         $deptHead->syncPermissions([
-            'submit_request',
-            'confirm_receipt',
-            'report_damage',
-            'view_own_dept',
+            'soumettre_demande',
+            'confirmer_reception',
+            'signaler_dommage',
+            'voir_son_service',
         ]);
 
-        $overseer = Role::firstOrCreate(['name' => 'Overseer', 'guard_name' => 'web']);
-        $overseer->syncPermissions([
-            'view_reports',
-            'view_own_dept',
+        $directeur = Role::firstOrCreate(['name' => 'Directeur', 'guard_name' => 'web']);
+        $directeur->syncPermissions([
+            'voir_rapports',
+            'voir_son_service',
         ]);
     }
 }
