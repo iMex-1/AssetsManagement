@@ -14,8 +14,6 @@ use Illuminate\Validation\Rule;
 
 class DemandeApiController extends Controller
 {
-    public function __construct(private readonly FileUploadService $uploads) {}
-
     public function index(Request $request): JsonResponse
     {
         $query = Demande::with(['utilisateur', 'lignes.article']);
@@ -49,17 +47,12 @@ class DemandeApiController extends Controller
             'bon_scanne'               => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
-        $bonPath = null;
-        if ($request->hasFile('bon_scanne')) {
-            $bonPath = $this->uploads->storeBonScanne($request->file('bon_scanne'));
-        }
-
-        DB::transaction(function () use ($validated, $bonPath, $request, &$demande) {
+        $demande = null;
+        DB::transaction(function () use ($validated, $request, &$demande) {
             $demande = Demande::create([
                 'utilisateur_id' => $request->user()->id,
                 'date_creation'  => $validated['date_creation'],
                 'statut'         => 'En_attente',
-                'bon_scanne'     => $bonPath,
             ]);
 
             foreach ($validated['lignes'] as $ligne) {
@@ -69,14 +62,25 @@ class DemandeApiController extends Controller
                     'motif'              => $ligne['motif'] ?? null,
                 ]);
             }
+            
+            // Handle media upload
+            if ($request->hasFile('bon_scanne')) {
+                $demande->addMediaFromRequest('bon_scanne')
+                    ->toMediaCollection('bon_scanne');
+            }
         });
 
-        return response()->json($demande->load(['utilisateur', 'lignes.article']), 201);
+        $demande->load(['utilisateur', 'lignes.article']);
+        $demande->bon_scanne_url = $demande->getFirstMediaUrl('bon_scanne');
+        
+        return response()->json($demande, 201);
     }
 
     public function show(Demande $demande): JsonResponse
     {
-        return response()->json($demande->load(['utilisateur', 'lignes.article']));
+        $demande->load(['utilisateur', 'lignes.article']);
+        $demande->bon_scanne_url = $demande->getFirstMediaUrl('bon_scanne');
+        return response()->json($demande);
     }
 
     public function update(Request $request, Demande $demande): JsonResponse
@@ -103,13 +107,19 @@ class DemandeApiController extends Controller
             ], 422);
         }
 
+        $demande->update(['statut' => $validated['statut']]);
+        
+        // Handle media upload
         if ($request->hasFile('bon_scanne')) {
-            $validated['bon_scanne'] = $this->uploads->storeBonScanne($request->file('bon_scanne'));
+            $demande->clearMediaCollection('bon_scanne');
+            $demande->addMediaFromRequest('bon_scanne')
+                ->toMediaCollection('bon_scanne');
         }
 
-        $demande->update(['statut' => $validated['statut'], 'bon_scanne' => $validated['bon_scanne'] ?? $demande->bon_scanne]);
-
-        return response()->json($demande->load(['utilisateur', 'lignes.article']));
+        $demande->load(['utilisateur', 'lignes.article']);
+        $demande->bon_scanne_url = $demande->getFirstMediaUrl('bon_scanne');
+        
+        return response()->json($demande);
     }
 
     public function destroy(Demande $demande): JsonResponse

@@ -10,27 +10,27 @@ import { Spinner } from '../../components/ui/Spinner'
 import styles from './Affectations.module.css'
 
 const ETAT_VARIANT = { en_service: 'success', en_panne: 'danger', en_reparation: 'warning', hors_service: 'neutral' }
-const ETAT_LABEL   = { en_service: 'En service', en_panne: 'En panne', en_reparation: 'En réparation', hors_service: 'Hors service' }
+const ETAT_LABEL = { en_service: 'En service', en_panne: 'En panne', en_reparation: 'En réparation', hors_service: 'Hors service' }
 
 // Transitions autorisées par rôle
 const TRANSITIONS_ADMIN = {
-  en_service:    ['en_panne'],
-  en_panne:      ['en_reparation', 'hors_service'],
+  en_service: ['en_panne'],
+  en_panne: ['en_reparation', 'hors_service'],
   en_reparation: ['en_service', 'hors_service'],
-  hors_service:  [],
+  hors_service: [],
 }
 const TRANSITIONS_CHEF = {
   en_service: ['en_panne'],
-  en_panne:   [],
+  en_panne: [],
   en_reparation: [],
-  hors_service:  [],
+  hors_service: [],
 }
 
 const TRANSITION_LABELS = {
-  en_panne:      'Signaler une panne',
+  en_panne: 'Signaler une panne',
   en_reparation: 'Mettre en réparation',
-  en_service:    'Remettre en service',
-  hors_service:  'Mettre hors service',
+  en_service: 'Remettre en service',
+  hors_service: 'Mettre hors service',
 }
 
 export function AffectationShow() {
@@ -134,11 +134,11 @@ export function AffectationShow() {
           </div>
         </div>
 
-        {affectation.photo_jointe && (
+        {affectation.photo_url && (
           <div className={styles.photoCard}>
             <p className={styles.photoLabel}>Photo de preuve</p>
             <img
-              src={`/storage/${affectation.photo_jointe}`}
+              src={affectation.photo_url}
               alt="Preuve d'installation"
               className={styles.photoFull}
             />

@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Affectation extends Model
+class Affectation extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'article_id',
@@ -19,11 +21,16 @@ class Affectation extends Model
         'quantite_affectee',
         'cible',
         'coordonnees_gps',
-        'photo_jointe',
         'date_action',
         'etat',
         'date_fin',
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('photo_jointe')
+            ->singleFile(); // Only one photo per assignment
+    }
 
     protected $casts = [
         'date_action' => 'date',

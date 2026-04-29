@@ -13,7 +13,7 @@ import { Pagination } from '../../components/ui/Pagination'
 import styles from './Affectations.module.css'
 
 const ETAT_VARIANT = { en_service: 'success', en_panne: 'danger', en_reparation: 'warning', hors_service: 'neutral' }
-const ETAT_LABEL   = { en_service: 'En service', en_panne: 'En panne', en_reparation: 'En réparation', hors_service: 'Hors service' }
+const ETAT_LABEL = { en_service: 'En service', en_panne: 'En panne', en_reparation: 'En réparation', hors_service: 'Hors service' }
 
 export function AffectationList() {
   const navigate = useNavigate()

@@ -9,17 +9,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Demande extends Model
+class Demande extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'utilisateur_id',
         'date_creation',
         'statut', // En_attente, Valide, Livre
-        'bon_scanne',
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('bon_scanne')
+            ->singleFile(); // Only one scanned document per request
+    }
 
     protected $casts = [
         'date_creation' => 'date',

@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class AffectationApiController extends Controller
 {
-    public function __construct(private readonly FileUploadService $uploads) {}
-
     public function index(Request $request): JsonResponse
     {
         $query = Affectation::with(['article', 'service']);
@@ -89,7 +87,10 @@ class AffectationApiController extends Controller
             $affectation->save();
         });
 
-        return response()->json($affectation->load(['article', 'service']));
+        $affectation->load(['article', 'service']);
+        $affectation->photo_url = $affectation->getFirstMediaUrl('photo_jointe');
+        
+        return response()->json($affectation);
     }
 
     public function store(Request $request): JsonResponse
@@ -117,12 +118,8 @@ class AffectationApiController extends Controller
             ], 422);
         }
 
-        $photoPath = null;
-        if ($request->hasFile('photo_jointe')) {
-            $photoPath = $this->uploads->storePhotoJointe($request->file('photo_jointe'));
-        }
-
-        DB::transaction(function () use ($validated, $photoPath, $article, &$affectation) {
+        $affectation = null;
+        DB::transaction(function () use ($validated, $request, $article, &$affectation) {
             $affectation = Affectation::create([
                 'article_id'        => $validated['article_id'],
                 'service_id'        => $validated['service_id'],
@@ -130,19 +127,29 @@ class AffectationApiController extends Controller
                 'cible'             => $validated['cible'] ?? null,
                 'coordonnees_gps'   => $validated['coordonnees_gps'] ?? null,
                 'date_action'       => $validated['date_action'],
-                'photo_jointe'      => $photoPath,
             ]);
+
+            // Handle media upload
+            if ($request->hasFile('photo_jointe')) {
+                $affectation->addMediaFromRequest('photo_jointe')
+                    ->toMediaCollection('photo_jointe');
+            }
 
             // Auto-decrement stock
             $article->decrement('stock_actuel', $validated['quantite_affectee']);
         });
 
-        return response()->json($affectation->load(['article', 'service']), 201);
+        $affectation->load(['article', 'service']);
+        $affectation->photo_url = $affectation->getFirstMediaUrl('photo_jointe');
+        
+        return response()->json($affectation, 201);
     }
 
     public function show(Affectation $affectation): JsonResponse
     {
-        return response()->json($affectation->load(['article', 'service']));
+        $affectation->load(['article', 'service']);
+        $affectation->photo_url = $affectation->getFirstMediaUrl('photo_jointe');
+        return response()->json($affectation);
     }
 
     public function destroy(Affectation $affectation): JsonResponse
